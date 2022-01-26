@@ -6,11 +6,22 @@ import cpuinfo
 import requests
 import zipfile
 from selenium import webdriver
-from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome, Firefox, Edge, Safari
+import re
+import time
 
-def testwebdriver():
-    driver = Chrome("./chromedriver")
+def testwebdriver(app):
+    if app == "chromedriver":
+        driver = Chrome(executable_path="./chromedriver")
+    elif app == "geckodriver":
+        driver = Firefox(executable_path="./geckodriver")
+    elif app == "edgedriver":
+        driver = Edge(executable_path="./msedgedriver", capabilities={})
+    elif app == "safaridriver":
+        driver = Safari()
     driver.get("https://www.google.com")
+    time.sleep(1)
+    driver.quit()
 
 class WebDriverDownloader:
     class webdriver(object):
@@ -55,17 +66,57 @@ class WebDriverDownloader:
                 else:
                     raise Exception("Download chrome driver failed")
 
-                process = subprocess.Popen(['unzip', '-o', os.path.join(save_path, file_name)],
-                     stdout=subprocess.PIPE, 
-                     stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate() 
+                process = subprocess.Popen(['unzip', '-o', os.path.join(save_path, file_name)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.communicate() 
 
         elif self.app == self.webdriver.edgedriver:
-            pass
+            if not os.path.exists("/Applications/Microsoft Edge.app"):
+                raise FileNotFoundError("You haven't installed Microsoft Edge.")
+            else:
+                plistloc = "/Applications/Microsoft Edge.app/Contents/Info.plist"
+                with open(plistloc, 'rb') as f:
+                    self.version = plistlib.load(f)["CFBundleShortVersionString"]
+                driver_platform = "mac64" if self.cpu == "x86_64" else "arm64"
+                download_uri = f"https://msedgedriver.azureedge.net/{self.version}/edgedriver_{driver_platform}.zip"
+                resp = requests.get(download_uri, stream=True, timeout=300)
+
+                if resp.status_code == 200:
+                    file_name = download_uri.split("/")[-1]
+                    with open(os.path.join(save_path, file_name), "wb") as f:
+                        f.write(resp.content)
+                    print("Download driver completed")
+                else:
+                    raise Exception("Download chrome driver failed")
+
+                process = subprocess.Popen(['unzip', '-o', os.path.join(save_path, file_name)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.communicate() 
         elif self.app == self.webdriver.safaridriver:
             pass
         elif self.app == self.webdriver.geckodriver:
-            pass
+            if not os.path.exists("/Applications/Firefox.app"):
+                raise FileNotFoundError("You haven't installed Firefox.")
+            else:
+                lines = requests.get("https://github.com/mozilla/geckodriver/releases").text.split('\n')
+                line1, line2 = "", ""
+                for line in lines:
+                    line1 = line2
+                    line2 = line
+                    if line.find("latest") != -1:
+                        break
+                last_driver_ver = re.findall("\d+.\d+.\d+", line1)[0]
+                driver_platform = "macos" if self.cpu == "x86_64" else "macos-aarch64"
+                download_uri = f"https://github.com/mozilla/geckodriver/releases/download/v{last_driver_ver}/geckodriver-v{last_driver_ver}-{driver_platform}.tar.gz"
+                
+                resp = requests.get(download_uri, stream=True, timeout=300)
+                if resp.status_code == 200:
+                    file_name = download_uri.split("/")[-1]
+                    with open(os.path.join(save_path, file_name), "wb") as f:
+                        f.write(resp.content)
+                    print("Download driver completed")
+                else:
+                    raise Exception("Download chrome driver failed")
+                process = subprocess.Popen(['tar', '-xvf', os.path.join(save_path, file_name)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.communicate() 
 
     def __getDriverWindows(self, save_path):
         if self.app == self.webdriver.chromedriver:
@@ -78,7 +129,7 @@ class WebDriverDownloader:
             pass    
 
 if __name__ == "__main__":
-    app = WebDriverDownloader.webdriver.chromedriver
+    app = WebDriverDownloader.webdriver.safaridriver
     driver_save_path = "./"
     WebDriverDownloader(app=app).getDriver(driver_save_path)
-    testwebdriver()
+    testwebdriver(app)
