@@ -76,7 +76,7 @@ class WebDriverDownloader:
                 plistloc = "/Applications/Microsoft Edge.app/Contents/Info.plist"
                 with open(plistloc, 'rb') as f:
                     self.version = plistlib.load(f)["CFBundleShortVersionString"]
-                driver_platform = "mac64" if self.cpu == "x86_64" else "arm64"
+                driver_platform = "mac64" if self.cpu == "x86_64" else "mac64" #"arm64"
                 download_uri = f"https://msedgedriver.azureedge.net/{self.version}/edgedriver_{driver_platform}.zip"
                 resp = requests.get(download_uri, stream=True, timeout=300)
 
@@ -129,7 +129,7 @@ class WebDriverDownloader:
             pass    
 
 if __name__ == "__main__":
-    app = WebDriverDownloader.webdriver.safaridriver
+    app = WebDriverDownloader.webdriver.edgedriver
     driver_save_path = "./"
     WebDriverDownloader(app=app).getDriver(driver_save_path)
     testwebdriver(app)
