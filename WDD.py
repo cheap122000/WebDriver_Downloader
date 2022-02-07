@@ -145,9 +145,8 @@ def test_webdriver(web_browser, save_dir):
         time.sleep(1)
         driver.quit()
 
-
 if __name__ == "__main__":
     driver_save_dir = "./"
-    browser = "safari" # chrome, firefox, edge, safari
+    browser = "chrome" # chrome, firefox, edge, safari
     get_webdriver(browser, driver_save_dir)
     test_webdriver(browser, driver_save_dir)
