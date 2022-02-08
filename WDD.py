@@ -134,7 +134,7 @@ def get_webdriver(web_browser, save_dir):
                 with open(plistloc, 'rb') as f:
                     version = plistlib.load(f)["CFBundleShortVersionString"]
                 last_driver_ver = version
-                driver_platform = "mac64" if cpu == "x86_64" else "arm64"
+                driver_platform = "mac64" #if cpu == "x86_64" else "arm64"
                 driver_name = "msedgedriver"
         elif current_os == "windows":
             if not os.path.exists(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe") and not os.path.exits(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"):
@@ -176,7 +176,8 @@ def test_webdriver(web_browser, driver_path):
         wd_name = None
         if platform.system().lower() == "darwin":
             try:
-                driver = Safari().get("https://tw.yahoo.com")
+                driver = Safari()
+                driver.get("https://tw.yahoo.com")
                 time.sleep(1)
                 driver.quit()
                 return
