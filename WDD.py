@@ -174,9 +174,9 @@ def test_webdriver(web_browser, driver_path):
         driver = Edge(executable_path=driver_path, capabilities={})
     elif web_browser == "safari":
         wd_name = None
-        if platform.system() == "darwin":
+        if platform.system().lower() == "darwin":
             try:
-                driver = Safari()
+                driver = Safari().get("https://tw.yahoo.com")
                 time.sleep(1)
                 driver.quit()
                 return
