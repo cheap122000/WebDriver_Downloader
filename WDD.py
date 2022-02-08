@@ -1,5 +1,4 @@
 # WebDriver Downloader
-from genericpath import exists
 import platform
 import os
 import plistlib
