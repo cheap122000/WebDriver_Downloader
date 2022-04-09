@@ -118,10 +118,10 @@ def get_webdriver(web_browser, save_dir):
         for line in lines:
             line1 = line2
             line2 = line
-            if line.find("latest") != -1:
+            if line.find("mozilla/geckodriver/releases/download/") != -1:
                 break
-            
-        last_driver_ver = re.findall("\d+.\d+.\d+", line1)[0]
+        last_driver_ver = re.findall("\d+.\d+.\d+", line2)[0]
+
         download_uri = f"https://github.com/mozilla/geckodriver/releases/download/v{last_driver_ver}/geckodriver-v{last_driver_ver}-{driver_platform}.{ext}"
 
     elif web_browser == "edge":
