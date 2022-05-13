@@ -38,7 +38,7 @@ def download_driver(download_uri, save_dir, web_browser, wd_info, last_driver_ve
 def unzip_driver(current_os, file_path, file_dir):
     if current_os == "darwin":
         if file_path.endswith(".zip"):
-            process = subprocess.Popen(['unzip', '-o', file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(['unzip', '-o', file_path, '-d', os.path.dirname(file_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             process.communicate()
             
         elif file_path.endswith(".tar.gz"):
